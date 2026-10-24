@@ -2,6 +2,7 @@ package it.prog3.vendita.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Ordine {
@@ -13,10 +14,16 @@ public class Ordine {
    /*private StatoOrdine stato;
     private TipoPagamento metodoPagamento;*/
 
-    /*public Ordine(LocalDateTime dataOrdine, Utente utente, BigDecimal totale, RigaOrdine riga, StatoOrdine stato, TipoPagamento metodoPagamento) {
-        this.dataOrdine = 
-        this.utente = utente;
-    }*/
+    public Ordine(Utente utente) {
+        
+        if(utente != null) 
+            this.utente = utente;
+        else 
+            throw new IllegalArgumentException("Utente non deve essere vuoto " + utente + "\n");
+        
+        this.dataOrdine = LocalDateTime.now();
+        this.righe = new ArrayList<>();
+    }
 
 
      /** 
@@ -44,7 +51,7 @@ public class Ordine {
     public long getId() {
         return id;
     }
-   /*  public TipoPagamento getMetodoPagamento() {
+    /*  public TipoPagamento getMetodoPagamento() {
         return metodoPagamento;
     }*/
     public List<RigaOrdine> getRighe() {
@@ -63,19 +70,35 @@ public class Ordine {
   /*   public void setMetodoPagamento(TipoPagamento metodoPagamento) {
         this.metodoPagamento = metodoPagamento;
     }
-    public void setRighe(List<RigaOrdine> righe) {
-        this.righe = righe;
-    }
+    
     public void setStato(StatoOrdine stato) {
         this.stato = stato;
     }
 
-    public void setTotale(BigDecimal totale) {
-        this.totale = totale;
-    }
+    
     public void setUtente(Utente utente) {
         this.utente = utente;
     }
     */
+    public void setTotale(BigDecimal totale) {
+        this.totale = totale;
+    }
+    public void setRiga(RigaOrdine riga) {
+        this.righe.add(riga);
+    }
+
+    public void aggiungiRiga(RigaOrdine riga) {
+        if(riga != null)
+            setRiga(riga);
+    }
+
+    public void calcolaTotale() {//inziializziamo a zero il totale 
+        BigDecimal accumulatore = BigDecimal.ZERO;
+
+        for (RigaOrdine rigaOrdine : righe) {
+            accumulatore = accumulatore.add(rigaOrdine.getSubtotale());
+        }
+        totale = accumulatore;
+    }
 
 }
