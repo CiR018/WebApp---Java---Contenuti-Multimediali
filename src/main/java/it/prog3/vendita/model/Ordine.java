@@ -5,6 +5,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Rappresenta un ordine effettuato da un utente.
+ * Contiene la data di creazione, le righe acquistate e il totale calcolato
+ * a partire dai subtotali delle righe. Gli importi sono espressi in euro.
+ */
 public class Ordine {
     private long id;
     private LocalDateTime dataOrdine;
@@ -14,6 +19,13 @@ public class Ordine {
    /*private StatoOrdine stato;
     private TipoPagamento metodoPagamento;*/
 
+    /**
+     * Crea un ordine associato all'utente indicato, registra la data corrente
+     * e inizializza la lista delle righe come vuota.
+     *
+     * @param utente utente proprietario dell'ordine
+     * @throws IllegalArgumentException se {@code utente} è {@code null}
+     */
     public Ordine(Utente utente) {
         
         if(utente != null) 
@@ -23,19 +35,17 @@ public class Ordine {
         
         this.dataOrdine = LocalDateTime.now();
         this.righe = new ArrayList<>();
+        this.totale = BigDecimal.ZERO;
     }
 
 
-     /** 
-     * Il metodo set id viene utilizzato per assegnare un singolo ID da parte del database 
-     *Una volta impostato dal database il metodo setId non sarà più utilizzabile<br>
-     * Viene controllato se l'id interno di Ordine sia stato modificato se si lanciamo un'eccezione<br>
-     * Se l'id passato al metodo e negativo o zero lanciamo un'errore.<br>
-     * In tutti gli altri casi assegniamo l'id per la prima volta.<br>
-     * nota: il metodo non deve permettere altri inserimenti dopo la prima modifica da parte del database
-     * @param id identificativo del record nel DB
-     * @throws IllegalArgumentException per gestire un id non positivo.
-     * @throws IllegalStateException per gestire un valore non consentito per id.
+     /**
+     * Assegna all'ordine l'identificativo generato dal database.
+     * L'ID può essere assegnato una sola volta e deve essere positivo.
+     *
+     * @param id identificativo positivo restituito dal database
+     * @throws IllegalArgumentException se {@code id} è minore o uguale a zero
+     * @throws IllegalStateException se a questo ordine è già stato assegnato un ID
      */
     public void setId(long id) {
         if(this.id != 0)
@@ -44,25 +54,53 @@ public class Ordine {
             throw new IllegalArgumentException("L'ID della classe ordine deve essere positivo !");
         this.id = id;
     }
+    /**
+     * Restituisce la data e l'ora in cui è stato creato l'ordine.
+     *
+     * @return data e ora di creazione
+     */
     public LocalDateTime getDataOrdine() {
         return dataOrdine;
     }
 
+    /**
+     * Restituisce l'identificativo assegnato dal database, oppure zero se
+     * l'ordine non è ancora stato salvato.
+     *
+     * @return identificativo dell'ordine
+     */
     public long getId() {
         return id;
     }
     /*  public TipoPagamento getMetodoPagamento() {
         return metodoPagamento;
     }*/
+    /**
+     * Restituisce una copia non modificabile delle righe attualmente associate
+     * all'ordine. Per aggiungere righe usare {@link #aggiungiRiga(RigaOrdine)}.
+     *
+     * @return copia non modificabile delle righe dell'ordine
+     */
     public List<RigaOrdine> getRighe() {
-        return righe;
+        return List.copyOf(righe);
     }
     /*public StatoOrdine getStato() {
         return stato;
     }*/
+    /**
+     * Restituisce il totale corrente dell'ordine, espresso in euro.
+     * Un ordine senza righe ha totale pari a zero.
+     *
+     * @return totale corrente dell'ordine
+     */
     public BigDecimal getTotale() {
         return totale;
     }
+    /**
+     * Restituisce l'utente proprietario dell'ordine.
+     *
+     * @return utente associato all'ordine
+     */
     public Utente getUtente() {
         return utente;
     }
@@ -80,19 +118,32 @@ public class Ordine {
         this.utente = utente;
     }
     */
-    public void setTotale(BigDecimal totale) {
-        this.totale = totale;
-    }
-    public void setRiga(RigaOrdine riga) {
-        this.righe.add(riga);
-    }
-
+    /**
+     * Aggiunge una riga all'ordine e ricalcola il totale.
+     * La riga deve essere non nulla e fare riferimento a questo stesso ordine.
+     *
+     * @param riga riga da aggiungere all'ordine
+     * @throws IllegalArgumentException se {@code riga} è {@code null} o appartiene
+     *                                  a un ordine diverso
+     */
     public void aggiungiRiga(RigaOrdine riga) {
-        if(riga != null)
-            setRiga(riga);
+        if (riga == null) {
+            throw new IllegalArgumentException("La riga dell'ordine non può essere null.");
+        }
+        if (riga.getOrdine() != this) {
+            throw new IllegalArgumentException("La riga deve appartenere a questo ordine.");
+        }
+
+        righe.add(riga);
+        calcolaTotale();
     }
 
-    public void calcolaTotale() {//inziializziamo a zero il totale 
+    /**
+     * Calcola il totale sommando i subtotali delle righe presenti e aggiorna
+     * il campo {@code totale}. Se la lista è vuota, il totale diventa zero.
+     *
+     */
+    public void calcolaTotale() {
         BigDecimal accumulatore = BigDecimal.ZERO;
 
         for (RigaOrdine rigaOrdine : righe) {
