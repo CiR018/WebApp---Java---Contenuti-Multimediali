@@ -1,6 +1,7 @@
 package it.prog3.vendita.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  *  La classe Prodotto viene utilizzata per rappresentare i prodotti presenti nel catalogo 
@@ -132,6 +133,22 @@ public class Prodotto {
      */
     public Integer getPercentualeSconto() {
         return percentualeSconto;
+    }
+
+    /**
+     * Calcola il prezzo del prodotto dopo l'applicazione dello sconto
+     * percentuale. Se non è stato impostato uno sconto, restituisce il costo
+     * originale. Il risultato viene arrotondato a due cifre decimali con la
+     * regola {@link RoundingMode#HALF_UP}.
+     *
+     * @return prezzo scontato, oppure il costo originale se lo sconto è nullo
+     */
+    public BigDecimal getPrezzoScontato() {
+        if (percentualeSconto == null) {
+            return costo;
+        }
+        return costo.multiply(BigDecimal.valueOf(100 - percentualeSconto))
+                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
     }
     /** Restituisce il numero di prodotti attualmente disponibili
      * @return restituisce la quantità di scorte disponibili del prodotto
