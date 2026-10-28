@@ -9,8 +9,8 @@ import java.util.List;
  * gestisce le righe e gli observer registrati.
  */
 public class Carrello {
-    private List<RigaCarrello> righe;
-    private List<CarrelloObserver> osservatori;
+    private final List<RigaCarrello> righe;
+    private final List<CarrelloObserver> osservatori;
 
     /**
      * Crea un carrello vuoto, pronto a contenere prodotti e observer.
@@ -31,17 +31,59 @@ public class Carrello {
      *         quantità non è positiva
      */
     public void aggiungiProdotto(Prodotto prodotto, int quantita) {
+        RigaCarrello rigaTrovata = null;
 
+        if (prodotto == null) {
+            throw new IllegalArgumentException("Il prodotto non può essere null.");
+        }
+        if (quantita <= 0) {
+            throw new IllegalArgumentException("La quantità deve essere maggiore di zero.");
+        }
+
+        for (RigaCarrello riga : righe) {
+            if (riga.getProdotto().getId() == prodotto.getId()) {
+                rigaTrovata = riga;
+                break;
+            }
+        }
+        if (rigaTrovata == null) {
+            righe.add(new RigaCarrello(prodotto, quantita));
+        } else {
+            int nuovaQuantita = rigaTrovata.getQuantita() + quantita;
+            rigaTrovata.setQuantita(nuovaQuantita);
+        }
+
+        notificaOsservatori();
     }
 
     /**
-     * Rimuove dal carrello la riga associata al prodotto. Se la riga viene
-     * rimossa, gli observer vengono notificati.
+     * Rimuove dal carrello la riga associata al prodotto e notifica gli
+     * observer.
      *
      * @param prodotto prodotto da rimuovere dal carrello
+     * @throws IllegalArgumentException se il prodotto è {@code null} oppure
+     *         non è presente nel carrello
      */
     public void rimuoviProdotto(Prodotto prodotto) {
+        RigaCarrello rigaTrovata = null;
 
+        if (prodotto == null) {
+            throw new IllegalArgumentException("Il prodotto non può essere null.");
+        }
+
+        for (RigaCarrello riga : righe) {
+            if (riga.getProdotto().getId() == prodotto.getId()) {
+                rigaTrovata = riga;
+                break;
+            }
+        }
+
+        if (rigaTrovata == null) {
+            throw new IllegalArgumentException("Il prodotto non è presente nel carrello.");
+        }
+        righe.remove(rigaTrovata);
+
+        notificaOsservatori();
     }
 
     /**
@@ -53,7 +95,7 @@ public class Carrello {
      *         contiene prodotti
      */
     public List<RigaCarrello> getRighe() {
-
+        return List.copyOf(righe);
     }
 
     /**
@@ -66,31 +108,47 @@ public class Carrello {
     public BigDecimal getTotale() {
         BigDecimal totale = BigDecimal.ZERO;
 
-        for(RigaCarrello riga : righe) {
-            BigDecimal subtotale = riga.getProdotto().getPrezzoScontato().multiply(BigDecimal.valueOf(riga.getQuantita()));
-
+        for (RigaCarrello riga : righe) {
+            BigDecimal subtotale = riga.getProdotto().getPrezzoScontato()
+                    .multiply(BigDecimal.valueOf(riga.getQuantita()));
             totale = totale.add(subtotale);
         }
-       return totale;
+        return totale;
     }
 
     /**
      * Registra un observer che dovrà ricevere le notifiche quando il carrello
-     * cambia.
+     * cambia. Se l'osservatore è già registrato non lo aggiunge.
      *
      * @param osservatore observer da registrare
+     * @throws IllegalArgumentException se l'observer è {@code null} o è già
+     *         stato registrato
      */
     public void registraOsservatore(CarrelloObserver osservatore) {
-
+        if (osservatore == null) {
+            throw new IllegalArgumentException("L'observer non può essere null.");
+        }
+        if (!osservatori.contains(osservatore)) {
+            osservatori.add(osservatore);
+        } else {
+            throw new IllegalArgumentException("L'observer è già registrato.");
+        }
     }
 
     /**
      * Rimuove un observer dalla lista di quelli registrati.
      *
      * @param osservatore observer da rimuovere
+     * @throws IllegalArgumentException se l'observer è {@code null} o non è
+     *         registrato
      */
     public void rimuoviOsservatore(CarrelloObserver osservatore) {
-
+        if (osservatore == null) {
+            throw new IllegalArgumentException("L'observer da rimuovere non può essere null.");
+        }
+        if (!osservatori.remove(osservatore)) {
+            throw new IllegalArgumentException("L'observer da rimuovere non è registrato.");
+        }
     }
 
     /**
@@ -98,6 +156,8 @@ public class Carrello {
      * di questo carrello.
      */
     public void notificaOsservatori() {
-
+        for (CarrelloObserver osservatore : List.copyOf(osservatori)) {
+            osservatore.aggiorna(this);
+        }
     }
 }

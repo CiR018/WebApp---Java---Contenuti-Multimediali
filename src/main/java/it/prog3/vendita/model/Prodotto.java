@@ -19,7 +19,7 @@ public class Prodotto {
     private int quantitaScorta;
     private BigDecimal costo;
     private Integer percentualeSconto;
-    //private CategoriaComponente categoria;
+    private CategoriaComponente categoria;
 
     /**
      * Costruttore completo per creare un nuovo oggetto Prodotto.
@@ -30,7 +30,7 @@ public class Prodotto {
      * @param costo il prezzo del singolo prodotto
      * @param percentualeSconto la percentuale di sconto applicata (può essere null)
      */
-    public Prodotto(String codice, String nome, String descrizione, int quantitaScorta, BigDecimal costo, Integer percentualeSconto) {
+    public Prodotto(String codice, String nome, String descrizione, int quantitaScorta, BigDecimal costo, Integer percentualeSconto, CategoriaComponente categoria) {
 
         this.codice = codice;
         this.nome = nome;
@@ -38,19 +38,19 @@ public class Prodotto {
         this.quantitaScorta = quantitaScorta;
         this.costo = costo;
         this.percentualeSconto = percentualeSconto;
-        //this.categoria = categoria;
+        this.categoria = categoria;
     }
 
     /**
      * Il metodo set id viene utilizzato per assegnare un singolo ID da parte del database 
-     *Una volta impostato dal database il metodo setId non sarà più utilizzabile<br>
+     * Una volta impostato dal database il metodo setId non sarà più utilizzabile<br>
      * Viene controllato se l'id interno del prodotto e già stato modificato se si lanciamo un'eccezione<br>
      * Se l'id passato al metodo e negativo o zero lanciamo un'errore.<br>
      * In tutti gli altri casi assegniamo l'id per la prima volta.<br>
      * nota: il metodo non deve permettere altri inserimenti dopo la prima modifica da parte del database
      * @param id identificativo del record nel DB
-     *@throws IllegalArgumentException per gestire un id non positivo.
-     *@throws IllegalStateException per gestire un valore non consentito per id.
+     * @throws IllegalArgumentException per gestire un id non positivo.
+     * @throws IllegalStateException per gestire un valore non consentito per id.
      */
     public void setId(long id) {
         if(this.id != 0)
