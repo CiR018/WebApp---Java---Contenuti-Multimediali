@@ -75,9 +75,11 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
         try (Connection connessione = connessioneDB.getConnection(); PreparedStatement statement = connessione.prepareStatement(query)) {
             statement.setLong(1, id);
             try (ResultSet risultato = statement.executeQuery()) {
+                // next() è false quando la query non ha trovato alcun prodotto.
                 if(!risultato.next())
                     return null;
 
+                // Legge i dati della riga trovata e li converte nei tipi del modello.
                 long idProdotto = risultato.getLong("id");
                 String codice = risultato.getString("codice");
                 String nome = risultato.getString("nome");
@@ -87,14 +89,17 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
                 // Il database conserva i centesimi; il modello usa euro.
                 BigDecimal costoInEuro = costoInCentesimi.movePointLeft(2);
                 Integer percentualeScontoLetta =  risultato.getInt("percentualeSconto");
+                // getInt restituisce 0 anche per SQL NULL: wasNull distingue i due casi.
                 Integer percentualeSconto = risultato.wasNull() ? null : percentualeScontoLetta;
                 
                 long idCategoria = risultato.getLong("id_categoria");
+                // Il prodotto conserva l'oggetto categoria, non solo il suo ID.
                 CategoriaComponente categoria = categoriaDAO.trovaPerID(idCategoria);
 
                 if(categoria == null)
                     throw new SQLException("Categoria inesistente per quel prodotto \n");
 
+                // Il costruttore crea il prodotto; l'ID letto viene assegnato dopo.
                 Prodotto prodotto = new Prodotto(nome, codice, descrizione, quantitaScorta, costoInEuro, percentualeSconto, categoria);
                 prodotto.setId(idProdotto);
 
@@ -120,7 +125,7 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
                     """;
         try (Connection connessione = connessioneDB.getConnection(); PreparedStatement statement = connessione.prepareStatement(query)) {
             try (ResultSet risultato = statement.executeQuery()) {
-            
+                // Qui il cursore avanza su ogni prodotto trovato.
                 while(risultato.next()) {
                     long idProdotto = risultato.getLong("id");
                     String codice = risultato.getString("codice");
@@ -131,6 +136,7 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
                     // Il database conserva i centesimi; il modello usa euro.
                     BigDecimal costoInEuro = costoInCentesimi.movePointLeft(2);
                     Integer percentualeScontoLetta =  risultato.getInt("percentualeSconto");
+                    // getInt restituisce 0 anche per SQL NULL: wasNull distingue i due casi.
                     Integer percentualeSconto = risultato.wasNull() ? null : percentualeScontoLetta;
                     
                     long idCategoria = risultato.getLong("id_categoria");
@@ -173,6 +179,7 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
         try (Connection connessione = connessioneDB.getConnection(); PreparedStatement statement = connessione.prepareStatement(query)) {
             statement.setString(1, codiceProdotto.trim());
             try (ResultSet risultato = statement.executeQuery()) {
+                // Il codice è univoco, quindi la ricerca restituisce al massimo una riga.
                 if(!risultato.next())
                     return null;
 
@@ -185,6 +192,7 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
                 // Il database conserva i centesimi; il modello usa euro.
                 BigDecimal costoInEuro = costoInCentesimi.movePointLeft(2);
                 Integer percentualeScontoLetta =  risultato.getInt("percentualeSconto");
+                // getInt restituisce 0 anche per SQL NULL: wasNull distingue i due casi.
                 Integer percentualeSconto = risultato.wasNull() ? null : percentualeScontoLetta;
                 
                 long idCategoria = risultato.getLong("id_categoria");
@@ -256,9 +264,8 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
                 throw new SQLException("L'inserimento non ha salvato esattamente un prodotto. \n");
             
             // L'ID va letto dalla stessa connessione che ha eseguito l'INSERT.
-            try (Statement statementId = connessione.createStatement();
-                ResultSet risultatoId = statementId.executeQuery("SELECT last_insert_rowid()")) {
-
+            try (Statement statementId = connessione.createStatement(); ResultSet risultatoId = statementId.executeQuery("SELECT last_insert_rowid()")) {
+                //recupera l'id generato dal database
                     if (!risultatoId.next()) {
                         throw new SQLException("SQLite non ha restituito l'ID del prodotto inserito.");
                     }
@@ -267,12 +274,94 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
             }
         }
     }
-
+    /**
+     * Aggiorna nel database i dati di un prodotto già identificato.
+     *
+     * @param prodotto prodotto con i dati aggiornati e un ID assegnato
+     * @throws IllegalArgumentException se il prodotto è {@code null}, non ha
+     *         un ID positivo o la categoria non ha un ID positivo
+     * @throws ArithmeticException se il costo non è rappresentabile esattamente
+     *         in centesimi
+     * @throws SQLException se si verifica un errore SQL o l'ID non corrisponde
+     *         a un prodotto presente
+     */
+    @Override
     public void aggiorna(Prodotto prodotto) throws SQLException {
-        
+                
+        if (prodotto == null) {
+            throw new IllegalArgumentException("Il prodotto non può essere null.");
+        }
+
+        if (prodotto.getId() <= 0) {
+            throw new IllegalArgumentException("Il prodotto non ha un ID assegnato.");
+        }
+
+        long idCategoria = prodotto.getCategoria().getID();
+        if (idCategoria <= 0) {
+            throw new IllegalArgumentException("La categoria deve avere un ID assegnato dal database.");
+        }
+
+        String query = """
+            UPDATE Prodotto
+                SET codice = ?, nome = ?, descrizione = ?, quantitaScorta = ?,
+                    costo = ?, percentualeSconto = ?, id_categoria = ?
+                WHERE id = ?
+            """;
+
+        try (Connection connessione = connessioneDB.getConnection(); PreparedStatement statement = connessione.prepareStatement(query)) {
+            statement.setString(1, prodotto.getCodice().trim());
+            statement.setString(2, prodotto.getNome().trim());
+            statement.setString(3, prodotto.getDescrizione());
+            statement.setInt(4, prodotto.getQuantitaScorta());
+            // Converte gli euro del modello in centesimi interi per SQLite.
+            long costoInCentesimi = prodotto.getCosto().movePointRight(2).longValueExact();
+            statement.setLong(5, costoInCentesimi);
+
+            if (prodotto.getPercentualeSconto() == null)
+                statement.setNull(6, Types.INTEGER);
+            else 
+                statement.setInt(6, prodotto.getPercentualeSconto());
+            
+
+            statement.setLong(7, idCategoria);
+            statement.setLong(8, prodotto.getId());
+
+            int righeAggiornate = statement.executeUpdate();
+            if (righeAggiornate != 1) {
+                throw new SQLException("L'aggiornamento non ha modificato esattamente un prodotto.");
+            }
+        }
     }
+
+    /**
+     * Elimina dal database il prodotto con l'ID indicato.
+     *
+     * @param id identificativo positivo del prodotto da eliminare
+     * @throws IllegalArgumentException se l'ID non è positivo
+     * @throws SQLException se si verifica un errore SQL, il prodotto non esiste
+     *         o un vincolo del database impedisce l'eliminazione
+     */
+    @Override
     public void elimina(long id) throws SQLException {
 
+        if (id <= 0) {
+            throw new IllegalArgumentException("L'ID del prodotto deve essere positivo.");
+        }
+
+        String query = """
+            DELETE
+                FROM PRODOTTO
+                    WHERE id = ?
+            """;
+
+        try (Connection connessione = connessioneDB.getConnection(); PreparedStatement statement = connessione.prepareStatement(query)) {
+            statement.setLong(1, id);
+
+            int righeEliminate = statement.executeUpdate();
+            if (righeEliminate != 1) {
+                throw new SQLException("L'eliminazione non ha rimosso esattamente un prodotto.");
+            }
+        }
     }
     /**
      * Recupera i prodotti assegnati direttamente alla categoria indicata.
@@ -310,6 +399,7 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
                     // Il database conserva i centesimi; il modello usa euro.
                     BigDecimal costoInEuro = costoInCentesimi.movePointLeft(2);
                     Integer percentualeScontoLetta =  risultato.getInt("percentualeSconto");
+                    // getInt restituisce 0 anche per SQL NULL: wasNull distingue i due casi.
                     Integer percentualeSconto = risultato.wasNull() ? null : percentualeScontoLetta;
                     
                     long idCategoriaProdotto = risultato.getLong("id_categoria");
