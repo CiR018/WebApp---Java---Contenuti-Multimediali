@@ -28,6 +28,7 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
 
     /** Recupera gli oggetti categoria associati ai prodotti. */
     private final CategoriaDAO categoriaDAO;
+       
 
     /**
      * Crea il DAO SQLite dei prodotti.
@@ -79,31 +80,7 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
                 if(!risultato.next())
                     return null;
 
-                // Legge i dati della riga trovata e li converte nei tipi del modello.
-                long idProdotto = risultato.getLong("id");
-                String codice = risultato.getString("codice");
-                String nome = risultato.getString("nome");
-                String descrizione = risultato.getString("descrizione");
-                int quantitaScorta = risultato.getInt("quantitaScorta");
-                BigDecimal costoInCentesimi = risultato.getBigDecimal("costo");
-                // Il database conserva i centesimi; il modello usa euro.
-                BigDecimal costoInEuro = costoInCentesimi.movePointLeft(2);
-                Integer percentualeScontoLetta =  risultato.getInt("percentualeSconto");
-                // getInt restituisce 0 anche per SQL NULL: wasNull distingue i due casi.
-                Integer percentualeSconto = risultato.wasNull() ? null : percentualeScontoLetta;
-                
-                long idCategoria = risultato.getLong("id_categoria");
-                // Il prodotto conserva l'oggetto categoria, non solo il suo ID.
-                CategoriaComponente categoria = categoriaDAO.trovaPerID(idCategoria);
-
-                if(categoria == null)
-                    throw new SQLException("Categoria inesistente per quel prodotto \n");
-
-                // Il costruttore crea il prodotto; l'ID letto viene assegnato dopo.
-                Prodotto prodotto = new Prodotto(nome, codice, descrizione, quantitaScorta, costoInEuro, percentualeSconto, categoria);
-                prodotto.setId(idProdotto);
-
-                return prodotto;
+                return mappaRiga(risultato);
             }
         } 
     }
@@ -127,27 +104,7 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
             try (ResultSet risultato = statement.executeQuery()) {
                 // Qui il cursore avanza su ogni prodotto trovato.
                 while(risultato.next()) {
-                    long idProdotto = risultato.getLong("id");
-                    String codice = risultato.getString("codice");
-                    String nome = risultato.getString("nome");
-                    String descrizione = risultato.getString("descrizione");
-                    int quantitaScorta = risultato.getInt("quantitaScorta");
-                    BigDecimal costoInCentesimi = risultato.getBigDecimal("costo");
-                    // Il database conserva i centesimi; il modello usa euro.
-                    BigDecimal costoInEuro = costoInCentesimi.movePointLeft(2);
-                    Integer percentualeScontoLetta =  risultato.getInt("percentualeSconto");
-                    // getInt restituisce 0 anche per SQL NULL: wasNull distingue i due casi.
-                    Integer percentualeSconto = risultato.wasNull() ? null : percentualeScontoLetta;
-                    
-                    long idCategoria = risultato.getLong("id_categoria");
-                    CategoriaComponente categoria = categoriaDAO.trovaPerID(idCategoria);
-
-                    if(categoria == null)
-                        throw new SQLException("Categoria inesistente per quel prodotto \n");
-
-                    Prodotto prodotto = new Prodotto(nome, codice, descrizione, quantitaScorta, costoInEuro, percentualeSconto, categoria);
-                    prodotto.setId(idProdotto);
-                    prodotti.add(prodotto);
+                    prodotti.add(mappaRiga(risultato));
                 } 
             }
         } 
@@ -183,28 +140,7 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
                 if(!risultato.next())
                     return null;
 
-                long idProdotto = risultato.getLong("id");
-                String codice = risultato.getString("codice");
-                String nome = risultato.getString("nome");
-                String descrizione = risultato.getString("descrizione");
-                int quantitaScorta = risultato.getInt("quantitaScorta");
-                BigDecimal costoInCentesimi = risultato.getBigDecimal("costo");
-                // Il database conserva i centesimi; il modello usa euro.
-                BigDecimal costoInEuro = costoInCentesimi.movePointLeft(2);
-                Integer percentualeScontoLetta =  risultato.getInt("percentualeSconto");
-                // getInt restituisce 0 anche per SQL NULL: wasNull distingue i due casi.
-                Integer percentualeSconto = risultato.wasNull() ? null : percentualeScontoLetta;
-                
-                long idCategoria = risultato.getLong("id_categoria");
-                CategoriaComponente categoria = categoriaDAO.trovaPerID(idCategoria);
-
-                if(categoria == null)
-                    throw new SQLException("Categoria inesistente per quel prodotto \n");
-
-                Prodotto prodotto = new Prodotto(nome, codice, descrizione, quantitaScorta, costoInEuro, percentualeSconto, categoria);
-                prodotto.setId(idProdotto);
-
-                return prodotto;
+                return mappaRiga(risultato);
             }
         } 
 
@@ -374,7 +310,8 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
      */
     @Override
     public List<Prodotto> trovaPerCategoria(long idCategoria) throws SQLException {
-           List<Prodotto> prodotti = new ArrayList<>();
+        
+        List<Prodotto> prodotti = new ArrayList<>();
 
         if(idCategoria <= 0)
             throw new IllegalArgumentException("L'id della categoria associata al prodotto deve essere positivo " + idCategoria + "\n" );
@@ -390,31 +327,54 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
             try (ResultSet risultato = statement.executeQuery()) {
             
                 while(risultato.next()) {
-                    long idProdotto = risultato.getLong("id");
-                    String codice = risultato.getString("codice");
-                    String nome = risultato.getString("nome");
-                    String descrizione = risultato.getString("descrizione");
-                    int quantitaScorta = risultato.getInt("quantitaScorta");
-                    BigDecimal costoInCentesimi = risultato.getBigDecimal("costo");
-                    // Il database conserva i centesimi; il modello usa euro.
-                    BigDecimal costoInEuro = costoInCentesimi.movePointLeft(2);
-                    Integer percentualeScontoLetta =  risultato.getInt("percentualeSconto");
-                    // getInt restituisce 0 anche per SQL NULL: wasNull distingue i due casi.
-                    Integer percentualeSconto = risultato.wasNull() ? null : percentualeScontoLetta;
-                    
-                    long idCategoriaProdotto = risultato.getLong("id_categoria");
-                    CategoriaComponente categoria = categoriaDAO.trovaPerID(idCategoriaProdotto);
-
-                    if(categoria == null)
-                        throw new SQLException("Categoria inesistente per quel prodotto \n");
-
-                    Prodotto prodotto = new Prodotto(nome, codice, descrizione, quantitaScorta, costoInEuro, percentualeSconto, categoria);
-                    prodotto.setId(idProdotto);
-                    prodotti.add(prodotto);
+                    prodotti.add(mappaRiga(risultato));
                 } 
             }
         } 
         return prodotti;
+    }
+
+
+/**
+ * Converte la riga corrente del {@link ResultSet} in un {@link Prodotto}.
+ *
+ * <p>Il costo viene convertito da centesimi (database) a euro (modello),
+ * lo sconto {@code NULL} diventa {@code null} e la categoria viene recuperata
+ * tramite {@link CategoriaDAO}. L'ID letto dal database è assegnato al prodotto
+ * dopo la sua creazione.</p>
+ *
+ * @param risultato risultato già posizionato su una riga valida
+ *        (dopo una chiamata riuscita a {@code next()}), con le colonne
+ *        {@code id, codice, nome, descrizione, quantitaScorta, costo,
+ *        percentualeSconto, id_categoria}
+ * @return prodotto ricostruito dalla riga corrente
+ * @throws SQLException se la lettura fallisce o se la categoria riferita
+ *         dal prodotto non esiste
+ */
+    private Prodotto mappaRiga(ResultSet risultato) throws SQLException {
+    
+        long idProdotto = risultato.getLong("id");
+        String codice = risultato.getString("codice");
+        String nome = risultato.getString("nome");
+        String descrizione = risultato.getString("descrizione");
+        int quantitaScorta = risultato.getInt("quantitaScorta");
+        BigDecimal costoInCentesimi = risultato.getBigDecimal("costo");
+        // Il database conserva i centesimi; il modello usa euro.
+        BigDecimal costoInEuro = costoInCentesimi.movePointLeft(2);
+        Integer percentualeScontoLetta =  risultato.getInt("percentualeSconto");
+        // getInt restituisce 0 anche per SQL NULL: wasNull distingue i due casi.
+        Integer percentualeSconto = risultato.wasNull() ? null : percentualeScontoLetta;
+                        
+        long idCategoriaProdotto = risultato.getLong("id_categoria");
+        CategoriaComponente categoria = categoriaDAO.trovaPerID(idCategoriaProdotto);
+
+            if(categoria == null)
+                throw new SQLException("Categoria inesistente per quel prodotto \n");
+
+        Prodotto prodotto = new Prodotto(nome, codice, descrizione, quantitaScorta, costoInEuro, percentualeSconto, categoria);
+        prodotto.setId(idProdotto);
+                    
+        return prodotto;
     }
 
 }

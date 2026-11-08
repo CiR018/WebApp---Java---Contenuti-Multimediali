@@ -30,10 +30,9 @@ public class Utente {
      * @param cognome cognome dell'utente
      * @param username nome utente univoco usato per l'accesso
      * @param passwordHash hash della password prodotto da {@code PasswordHasher};
-     *                     non deve contenere la password in chiaro
      * @param ruolo ruolo assegnato all'account
      * @throws IllegalArgumentException se uno dei parametri obbligatori è diverso da quello aspettato
-     * @throws NullPointerException se il ruolo ha valore null
+     * 
      */
 
     public Utente(String nome, String cognome, String username, String passwordHash, Ruolo ruolo) {
