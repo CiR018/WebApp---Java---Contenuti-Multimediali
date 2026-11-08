@@ -29,7 +29,7 @@ public class ConnessioneDB {
      * Percorso dinamico per non tenere statico il percorso del Database
      * istanze; usare {@link #getInstance()} per ottenere l'istanza condivisa.</p>
      */
-        private ConnessioneDB() {
+        ConnessioneDB() {
         Path percorsoDatabase = Path.of(System.getProperty("user.dir"),"DB","vendita.db");
         
         URL = "jdbc:sqlite:" + percorsoDatabase.toAbsolutePath();

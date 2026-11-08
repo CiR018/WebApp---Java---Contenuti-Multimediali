@@ -30,7 +30,7 @@ public class Prodotto {
      * @param codice codice obbligatorio del prodotto
      * @param descrizione descrizione obbligatoria del prodotto
      * @param quantitaScorta quantità iniziale in magazzino, non negativa
-     * @param costo costo unitario, non nullo e non negativo
+     * @param costo costo unitario, non nullo e maggiore di zero
      * @param percentualeSconto sconto percentuale tra 1 e 99, oppure
      *        {@code null} se non è previsto uno sconto
      * @param categoria categoria obbligatoria del prodotto
@@ -101,12 +101,12 @@ public class Prodotto {
     /**
      * Aggiorna il costo unitario del prodotto.
      *
-     * @param costo nuovo costo, non nullo e non negativo
-     * @throws IllegalArgumentException se il costo è nullo o negativo
+     * @param costo nuovo costo, non nullo e maggiore di zero
+     * @throws IllegalArgumentException se il costo è nullo, zero o negativo
      */
     public void setCosto(BigDecimal costo) {
-        if (costo == null || costo.signum() < 0) {
-            throw new IllegalArgumentException("Il costo non può essere null o negativo.");
+        if (costo == null || costo.signum() <= 0) {
+            throw new IllegalArgumentException("Il costo non può essere null, negativo o 0.");
         }
         this.costo = costo;
     }
