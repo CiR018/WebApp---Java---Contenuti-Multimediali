@@ -43,6 +43,7 @@ public class CategoriaComposita implements CategoriaComponente {
      */
     @Override
     public long getID() {
+        
         return id;
     }
 
@@ -54,6 +55,20 @@ public class CategoriaComposita implements CategoriaComponente {
     @Override
     public String getNome() {
         return nome;
+    }
+
+    /**
+     * Restituisce i figli diretti di questa categoria.
+     *
+     * <p>La lista restituita è una copia immutabile: per modificare la
+     * gerarchia si usano {@link #aggiungi(CategoriaComponente)} e
+     * {@link #rimuovi(CategoriaComponente)}, che mantengono i controlli
+     * anti-ciclo.</p>
+     *
+     * @return lista immutabile dei figli diretti, vuota se non ce ne sono
+     */
+    public List<CategoriaComponente> getFigli() {
+        return List.copyOf(componenti);
     }
 
     /**

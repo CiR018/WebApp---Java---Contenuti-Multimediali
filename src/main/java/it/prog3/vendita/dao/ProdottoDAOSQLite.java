@@ -205,7 +205,6 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
                     if (!risultatoId.next()) {
                         throw new SQLException("SQLite non ha restituito l'ID del prodotto inserito.");
                     }
-
                     prodotto.setId(risultatoId.getLong(1));
             }
         }
