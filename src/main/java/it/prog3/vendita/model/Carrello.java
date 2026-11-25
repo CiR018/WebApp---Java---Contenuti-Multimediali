@@ -24,11 +24,10 @@ public class Carrello {
      * Aggiunge al carrello la quantità richiesta di un prodotto. Se il prodotto
      * è già presente, la quantità della riga corrispondente viene incrementata;
      * al termine dell'operazione gli observer vengono notificati.
-     *
      * @param prodotto prodotto da aggiungere
      * @param quantita quantità da aggiungere, maggiore di zero
-     * @throws IllegalArgumentException se il prodotto è {@code null} o la
-     *         quantità non è positiva
+     * @throws IllegalArgumentException se il prodotto è null o la
+     * quantità non è positiva
      */
     public void aggiungiProdotto(Prodotto prodotto, int quantita) {
         RigaCarrello rigaTrovata = null;
@@ -59,10 +58,9 @@ public class Carrello {
     /**
      * Rimuove dal carrello la riga associata al prodotto e notifica gli
      * observer.
-     *
      * @param prodotto prodotto da rimuovere dal carrello
-     * @throws IllegalArgumentException se il prodotto è {@code null} oppure
-     *         non è presente nel carrello
+     * @throws IllegalArgumentException se il prodotto è null oppure
+     * non è presente nel carrello
      */
     public void rimuoviProdotto(Prodotto prodotto) {
         RigaCarrello rigaTrovata = null;
@@ -90,9 +88,8 @@ public class Carrello {
      * Restituisce le righe attualmente presenti nel carrello. La lista
      * restituita non deve consentire di modificare la struttura interna del
      * carrello.
-     *
      * @return lista non modificabile delle righe; vuota se il carrello non
-     *         contiene prodotti
+     * contiene prodotti
      */
     public List<RigaCarrello> getRighe() {
         return List.copyOf(righe);
@@ -101,9 +98,8 @@ public class Carrello {
     /**
      * Calcola il totale del carrello sommando il prezzo scontato di ogni
      * prodotto moltiplicato per la quantità della relativa riga.
-     *
-     * @return totale corrente del carrello, pari a {@link BigDecimal#ZERO} se
-     *         non contiene righe
+     * @return totale corrente del carrello, pari a BigDecimal se
+     * non contiene righe
      */
     public BigDecimal getTotale() {
         BigDecimal totale = BigDecimal.ZERO;
@@ -119,10 +115,9 @@ public class Carrello {
     /**
      * Registra un observer che dovrà ricevere le notifiche quando il carrello
      * cambia. Se l'osservatore è già registrato non lo aggiunge.
-     *
      * @param osservatore observer da registrare
-     * @throws IllegalArgumentException se l'observer è {@code null} o è già
-     *         stato registrato
+     * @throws IllegalArgumentException se l'observer è null o è già
+     * stato registrato
      */
     public void registraOsservatore(CarrelloObserver osservatore) {
         if (osservatore == null) {
@@ -137,10 +132,9 @@ public class Carrello {
 
     /**
      * Rimuove un observer dalla lista di quelli registrati.
-     *
      * @param osservatore observer da rimuovere
-     * @throws IllegalArgumentException se l'observer è {@code null} o non è
-     *         registrato
+     * @throws IllegalArgumentException se l'observer è null o non è
+     * registrato
      */
     public void rimuoviOsservatore(CarrelloObserver osservatore) {
         if (osservatore == null) {

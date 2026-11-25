@@ -9,11 +9,10 @@ public class RigaCarrello {
 
     /**
      * Crea una riga del carrello per il prodotto e la quantità indicati.
-     *
      * @param prodotto prodotto associato alla riga
      * @param quantita quantità richiesta, maggiore di zero
-     * @throws IllegalArgumentException se il prodotto è {@code null} o la
-     *         quantità non è positiva
+     * @throws IllegalArgumentException se il prodotto è null o la
+     * quantità non è positiva
      */
     public RigaCarrello(Prodotto prodotto, int quantita) {
         if (prodotto == null) {
@@ -28,7 +27,6 @@ public class RigaCarrello {
 
     /**
      * Restituisce il prodotto associato alla riga.
-     *
      * @return prodotto della riga
      */
     public Prodotto getProdotto() {
@@ -37,7 +35,6 @@ public class RigaCarrello {
 
     /**
      * Restituisce la quantità richiesta del prodotto.
-     *
      * @return quantità positiva
      */
     public int getQuantita() {
@@ -46,7 +43,6 @@ public class RigaCarrello {
 
     /**
      * Aggiorna la quantità richiesta del prodotto.
-     *
      * @param quantita nuova quantità, maggiore di zero
      * @throws IllegalArgumentException se la quantità non è positiva
      */

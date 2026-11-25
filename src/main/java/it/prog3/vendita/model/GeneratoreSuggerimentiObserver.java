@@ -12,10 +12,6 @@ import it.prog3.vendita.dao.ProdottoDAO;
 /**
  * Observer del carrello che calcola suggerimenti usando i prodotti appartenenti
  * alle stesse categorie dei prodotti già presenti nel carrello.
- *
- * <p>I prodotti già nel carrello e i suggerimenti duplicati vengono esclusi.
- * La classe usa {@link ProdottoDAO} per leggere il catalogo e non modifica mai
- * il carrello osservato.</p>
  */
 public class GeneratoreSuggerimentiObserver implements CarrelloObserver {
 
@@ -24,9 +20,8 @@ public class GeneratoreSuggerimentiObserver implements CarrelloObserver {
 
     /**
      * Crea il generatore di suggerimenti usando il DAO dei prodotti.
-     *
      * @param prodottoDAO DAO utilizzato per cercare i prodotti da suggerire
-     * @throws IllegalArgumentException se {@code prodottoDAO} è {@code null}
+     * @throws IllegalArgumentException se prodottoDAO è null
      */
     public GeneratoreSuggerimentiObserver(ProdottoDAO prodottoDAO) {
         if(prodottoDAO != null)
@@ -42,11 +37,10 @@ public class GeneratoreSuggerimentiObserver implements CarrelloObserver {
      * volta; i prodotti già presenti nel carrello e i risultati duplicati sono
      * scartati. I suggerimenti precedenti vengono sostituiti solo dopo che tutte
      * le ricerche sono riuscite.
-     *
      * @param carrello carrello che ha inviato la notifica
-     * @throws IllegalArgumentException se {@code carrello} è {@code null}
+     * @throws IllegalArgumentException se carrello è null
      * @throws IllegalStateException se il DAO non riesce a leggere i prodotti;
-     *         la causa è l'eccezione SQL originale
+     * la causa è l'eccezione SQL originale
      */
     @Override
     public void aggiorna(Carrello carrello) {
@@ -91,9 +85,8 @@ public class GeneratoreSuggerimentiObserver implements CarrelloObserver {
      * Restituisce i suggerimenti calcolati all'ultima notifica. La lista
      * restituita è una copia non modificabile e non consente al chiamante di
      * alterare la struttura interna dell'observer.
-     *
      * @return copia non modificabile dei prodotti suggeriti; inizialmente è
-     *         vuota
+     * vuota
      */
     public List<Prodotto> getSuggerimenti() {
         return List.copyOf(suggerimenti);

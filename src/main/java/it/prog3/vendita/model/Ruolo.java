@@ -5,9 +5,13 @@ package it.prog3.vendita.model;
  */
 public enum Ruolo {
 
-    /** Utente che acquista contenuti multimediali. */
+    /**
+     * Utente che acquista contenuti multimediali.
+     */
     CLIENTE,
 
-    /** Amministratore che gestisce il catalogo e gli ordini. */
+    /**
+     * Amministratore che gestisce il catalogo e gli ordini.
+     */
     AMMINISTRATORE
 }

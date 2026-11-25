@@ -10,7 +10,6 @@ public class ScortaInsufficienteException extends Exception {
 
     /**
      * Crea l'eccezione con un messaggio che descrive la carenza di scorta.
-     *
      * @param messaggio descrizione dell'errore
      */
     public ScortaInsufficienteException(String messaggio) {

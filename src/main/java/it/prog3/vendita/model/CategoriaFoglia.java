@@ -13,10 +13,9 @@ public class CategoriaFoglia implements CategoriaComponente {
 
     /**
      * Crea una categoria foglia priva di ID, che sarà assegnato dal database.
-     *
      * @param nome nome della categoria
-     * @throws IllegalArgumentException se il nome è {@code null} o vuoto dopo
-     *         aver rimosso gli spazi iniziali e finali
+     * @throws IllegalArgumentException se il nome è null o vuoto dopo
+     * aver rimosso gli spazi iniziali e finali
      */
     public CategoriaFoglia(String nome) {
         if (nome == null || nome.isBlank()) {
@@ -27,8 +26,7 @@ public class CategoriaFoglia implements CategoriaComponente {
 
     /**
      * Restituisce l'identificativo della categoria.
-     *
-     * @return ID assegnato dal database, oppure {@code 0} se non ancora assegnato
+     * @return ID assegnato dal database, oppure 0 se non ancora assegnato
      */
     @Override
     public long getID() {
@@ -37,7 +35,6 @@ public class CategoriaFoglia implements CategoriaComponente {
 
     /**
      * Restituisce il nome della categoria.
-     *
      * @return nome della categoria
      */
     @Override
@@ -48,10 +45,9 @@ public class CategoriaFoglia implements CategoriaComponente {
     /**
      * Restituisce gli ID del sottoalbero rappresentato da questa foglia.
      * Poiché non ha discendenti, la lista contiene soltanto il suo ID.
-     *
      * @return lista immutabile contenente l'ID della categoria
      * @throws IllegalStateException se la categoria non ha ancora ricevuto un
-     *         ID positivo dal database
+     * ID positivo dal database
      */
     @Override
     public List<Long> getIdSottoalbero() {
@@ -64,11 +60,10 @@ public class CategoriaFoglia implements CategoriaComponente {
     /**
      * Assegna l'ID generato dal database. L'ID può essere impostato una sola
      * volta e deve essere positivo.
-     *
      * @param id identificativo positivo generato dal database
-     * @throws IllegalArgumentException se {@code id} non è positivo
+     * @throws IllegalArgumentException se id non è positivo
      * @throws IllegalStateException se a questa categoria è già stato assegnato
-     *         un ID
+     * un ID
      */
     @Override
     public void setId(long id) {

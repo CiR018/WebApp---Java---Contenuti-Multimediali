@@ -11,24 +11,22 @@ public interface CategoriaDAO {
 
     /**
      * Cerca una categoria tramite il suo identificativo.
-     *
      * @param id identificativo della categoria
-     * @return categoria trovata, oppure {@code null} se non esiste
+     * @return categoria trovata, oppure null se non esiste
      * @throws SQLException se si verifica un errore durante l'accesso ai dati
      */
     CategoriaComponente trovaPerID(long id) throws SQLException;
 
     /**
-     * Recupera tutte le categorie disponibili.
-     *
-     * @return categorie trovate; lista vuota se non ce ne sono
+     * Recupera le categorie radice con i rispettivi sottoalberi.
+     * @return categorie radice con i rispettivi sottoalberi; lista vuota se
+     * non ci sono categorie
      * @throws SQLException se si verifica un errore durante l'accesso ai dati
      */
     List<CategoriaComponente> trovaTutte() throws SQLException;
 
     /**
      * Salva una categoria o sottocategoria e assegna l'ID generato dal database.
-     *
      * @param categoria componente di categoria da salvare
      * @throws SQLException se si verifica un errore durante l'accesso ai dati
      */
@@ -36,7 +34,6 @@ public interface CategoriaDAO {
 
     /**
      * Aggiorna una categoria o sottocategoria già salvata.
-     *
      * @param categoria componente con i dati aggiornati
      * @throws SQLException se si verifica un errore durante l'accesso ai dati
      */
@@ -44,7 +41,6 @@ public interface CategoriaDAO {
 
     /**
      * Elimina la categoria con l'identificativo indicato.
-     *
      * @param id identificativo della categoria da eliminare
      * @throws SQLException se si verifica un errore durante l'accesso ai dati
      */

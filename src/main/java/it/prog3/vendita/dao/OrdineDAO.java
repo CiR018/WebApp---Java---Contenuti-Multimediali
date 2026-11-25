@@ -11,16 +11,14 @@ public interface OrdineDAO {
 
     /**
      * Cerca un ordine tramite il suo identificativo.
-     *
      * @param id identificativo dell'ordine
-     * @return ordine trovato, oppure {@code null} se non esiste
+     * @return ordine trovato, oppure null se non esiste
      * @throws SQLException se si verifica un errore durante l'accesso ai dati
      */
     Ordine trovaPerID(long id) throws SQLException;
 
     /**
      * Recupera gli ordini appartenenti all'utente indicato.
-     *
      * @param idUtente identificativo dell'utente proprietario
      * @return ordini trovati; lista vuota se l'utente non ne ha
      * @throws SQLException se si verifica un errore durante l'accesso ai dati
@@ -29,7 +27,6 @@ public interface OrdineDAO {
 
     /**
      * Recupera tutti gli ordini, per le operazioni autorizzate di amministrazione.
-     *
      * @return ordini trovati; lista vuota se non ce ne sono
      * @throws SQLException se si verifica un errore durante l'accesso ai dati
      */
@@ -37,7 +34,6 @@ public interface OrdineDAO {
 
     /**
      * Aggiorna un ordine già salvato.
-     *
      * @param ordine ordine con i dati aggiornati
      * @throws SQLException se si verifica un errore durante l'accesso ai dati
      */
@@ -45,7 +41,6 @@ public interface OrdineDAO {
 
     /**
      * Salva un nuovo ordine.
-     *
      * @param ordine ordine da salvare
      * @throws SQLException se si verifica un errore durante l'accesso ai dati
      */

@@ -15,23 +15,24 @@ import it.prog3.vendita.model.CategoriaFoglia;
 
 
 /**
- * Implementazione SQLite di {@link CategoriaDAO}.
- * Ricostruisce la gerarchia delle categorie dal riferimento {@code id_padre}:
- * le categorie senza figli diventano {@link CategoriaFoglia}, quelle con figli
- * diventano {@link CategoriaComposita}. Ogni operazione usa una connessione
+ * Implementazione SQLite di CategoriaDAO.
+ * Ricostruisce la gerarchia delle categorie dal riferimento id_padre:
+ * le categorie senza figli diventano CategoriaFoglia, quelle con figli
+ * diventano CategoriaComposita. Ogni operazione usa una connessione
  * distinta; le modifiche ricorsive usano una transazione per mantenere coerenti
  * i dati persistiti.
  */
 public class CategoriaDAOSQLite implements CategoriaDAO {
 
-    /** Fornitore di connessioni al database (dipendenza iniettata). */
+    /**
+     * Fornitore di connessioni al database (dipendenza iniettata).
+     */
     private final ConnessioneDB connessioneDB;
 
     /**
      * Crea il DAO con la sorgente di connessioni indicata.
-     *
-     * @param connessioneDB fornitore di connessioni, non {@code null}
-     * @throws IllegalArgumentException se {@code connessioneDB} è {@code null}
+     * @param connessioneDB fornitore di connessioni, non null
+     * @throws IllegalArgumentException se connessioneDB è null
      */
     public CategoriaDAOSQLite(ConnessioneDB connessioneDB) {
 
@@ -43,15 +44,9 @@ public class CategoriaDAOSQLite implements CategoriaDAO {
 
     /**
      * Cerca una categoria per ID e ne ricostruisce l'intero sottoalbero.
-     * <p>
-     * Legge nome e figli diretti della categoria; per ogni figlio richiama
-     * ricorsivamente se stesso. Restituisce una foglia se non ha figli,
-     * altrimenti una composita che contiene i figli ricostruiti.
-     * </p>
-     *
      * @param id ID della categoria, deve essere positivo
-     * @return la categoria con il suo sottoalbero, oppure {@code null} se l'ID non esiste
-     * @throws IllegalArgumentException se {@code id} non è positivo
+     * @return la categoria con il suo sottoalbero, oppure null se l'ID non esiste
+     * @throws IllegalArgumentException se id non è positivo
      * @throws SQLException se l'accesso al database fallisce
      */
     @Override
@@ -112,15 +107,8 @@ public class CategoriaDAOSQLite implements CategoriaDAO {
 
     /**
      * Restituisce le categorie radice presenti nel database.
-     * <p>
-     * Legge gli ID delle categorie senza padre e ricostruisce per ciascuna il
-     * relativo sottoalbero tramite {@link #trovaPerID(long)}. Le sottocategorie
-     * sono quindi presenti nell'albero del padre, non come elementi aggiuntivi
-     * della lista restituita.
-     * </p>
-     *
      * @return lista delle categorie radice con i rispettivi sottoalberi; vuota
-     *         se non ci sono categorie
+     * se non ci sono categorie
      * @throws SQLException se l'accesso al database fallisce
      */
     @Override
@@ -151,21 +139,9 @@ public class CategoriaDAOSQLite implements CategoriaDAO {
 
     /**
      * Salva una nuova categoria insieme a tutto il suo sottoalbero.
-     * <p>
-     * La categoria passata viene salvata come radice ({@code id_padre} nullo);
-     * le eventuali sottocategorie sono salvate subito dopo, ciascuna collegata
-     * al proprio padre. L'intera operazione usa una sola connessione e una
-     * transazione: se un inserimento fallisce, nessuna riga viene conservata.
-     * Al termine ogni nodo salvato riceve l'ID generato dal database.
-     * </p>
-     * <p>
-     * Limite noto: in caso di rollback gli oggetti che avevano già ricevuto un
-     * ID lo mantengono, perché l'ID può essere assegnato una sola volta.
-     * </p>
-     *
      * @param categoria categoria nuova da salvare, con ID non ancora assegnato
-     * @throws IllegalArgumentException se la categoria è {@code null} o se lei
-     *         (o una sua sottocategoria) ha già un ID
+     * @throws IllegalArgumentException se la categoria è null o se lei
+     * (o una sua sottocategoria) ha già un ID
      * @throws SQLException se l'accesso al database fallisce
      */
     @Override
@@ -193,15 +169,9 @@ public class CategoriaDAOSQLite implements CategoriaDAO {
 
     /**
      * Inserisce una categoria e, ricorsivamente, le sue sottocategorie.
-     * <p>
-     * Usa la connessione ricevuta, senza aprirla né chiuderla, così tutti gli
-     * inserimenti fanno parte della stessa transazione. Il padre viene inserito
-     * prima dei figli, perché ogni figlio ha bisogno dell'ID del padre.
-     * </p>
-     *
      * @param connessione connessione già aperta della transazione in corso
      * @param categoria categoria da inserire, con ID non ancora assegnato
-     * @param idPadre ID del padre già salvato, oppure {@code null} per una radice
+     * @param idPadre ID del padre già salvato, oppure null per una radice
      * @throws IllegalArgumentException se la categoria ha già un ID
      * @throws SQLException se l'inserimento o la lettura dell'ID falliscono
      */
@@ -241,21 +211,20 @@ public class CategoriaDAOSQLite implements CategoriaDAO {
     /**
      * Aggiorna il nome di una categoria esistente e visita ricorsivamente i
      * suoi figli.
-     * <p>I figli già persistiti vengono aggiornati mantenendo il loro ID; i
-     * nuovi figli, identificati da ID {@code 0}, vengono inseriti collegandoli
+     * I figli già persistiti vengono aggiornati mantenendo il loro ID; i
+     * nuovi figli, identificati da ID 0, vengono inseriti collegandoli
      * al padre corrente. Tutte le modifiche sono eseguite in un'unica
      * transazione. Questo metodo non sposta categorie già persistite tra padri
-     * e non rimuove figli assenti dall'albero ricevuto.</p>
-     * <p>Se la transazione fallisce dopo che un nuovo nodo ha ricevuto l'ID, il
+     * e non rimuove figli assenti dall'albero ricevuto.
+     * Se la transazione fallisce dopo che un nuovo nodo ha ricevuto l'ID, il
      * rollback ripristina il database ma non azzera l'ID già assegnato
-     * all'oggetto Java.</p>
-     *
+     * all'oggetto Java.
      * @param categoria radice del sottoalbero da aggiornare; deve avere un ID
-     *                  positivo
-     * @throws IllegalArgumentException se la categoria è {@code null}, non ha
-     *         un ID positivo o un nuovo sottoalbero contiene nodi già identificati
+     * positivo
+     * @throws IllegalArgumentException se la categoria è null, non ha
+     * un ID positivo o un nuovo sottoalbero contiene nodi già identificati
      * @throws SQLException se il database non contiene uno dei nodi da
-     *         aggiornare o si verifica un errore durante la transazione
+     * aggiornare o si verifica un errore durante la transazione
      */
     @Override
     public void aggiorna(CategoriaComponente categoria) throws SQLException {
@@ -288,7 +257,6 @@ public class CategoriaDAOSQLite implements CategoriaDAO {
     /**
      * Aggiorna il nodo corrente e persiste ricorsivamente i suoi figli usando
      * la connessione della transazione chiamante.
-     *
      * @param connessione connessione già aperta della transazione
      * @param categoria categoria esistente da aggiornare
      * @throws SQLException se il nodo non esiste o un'operazione SQL fallisce
@@ -330,9 +298,8 @@ public class CategoriaDAOSQLite implements CategoriaDAO {
      * Un nodo nuovo può essere figlio di un nodo esistente, ma tutti i suoi
      * discendenti devono essere nuovi perché il loro ID padre verrà assegnato
      * durante l'inserimento ricorsivo.
-     *
      * @param categoria nodo da controllare
-     * @param padreNuovo {@code true} se il padre del nodo non è ancora persistito
+     * @param padreNuovo true se il padre del nodo non è ancora persistito
      * @throws IllegalArgumentException se un nuovo ramo contiene un ID assegnato
      */
     private void validaNuoviSottoalberi(
@@ -358,15 +325,14 @@ public class CategoriaDAOSQLite implements CategoriaDAO {
 
     /**
      * Elimina una categoria e tutte le sue sottocategorie.
-     * <p>Le categorie vengono eliminate dal basso verso l'alto in un'unica
+     * Le categorie vengono eliminate dal basso verso l'alto in un'unica
      * transazione. Se una categoria del sottoalbero è referenziata da un
      * prodotto, il vincolo di chiave esterna impedisce la cancellazione e
-     * l'intera transazione viene annullata.</p>
-     *
+     * l'intera transazione viene annullata.
      * @param id ID positivo della categoria radice del sottoalbero da eliminare
-     * @throws IllegalArgumentException se {@code id} non è positivo
+     * @throws IllegalArgumentException se id non è positivo
      * @throws SQLException se la categoria non esiste, un prodotto la
-     *         referenzia o si verifica un errore durante l'accesso ai dati
+     * referenzia o si verifica un errore durante l'accesso ai dati
      */
     @Override
     public void elimina(long id) throws SQLException {
@@ -393,11 +359,10 @@ public class CategoriaDAOSQLite implements CategoriaDAO {
     /**
      * Elimina prima i figli e poi la categoria indicata, usando la connessione
      * della transazione chiamante.
-     *
      * @param connessione connessione già aperta della transazione
      * @param id identificativo della categoria da eliminare
      * @throws SQLException se la categoria non esiste o un vincolo impedisce
-     *         la cancellazione
+     * la cancellazione
      */
     private void eliminaRicorsivo(Connection connessione, long id) throws SQLException {
         List<Long> idFigli = new ArrayList<>();

@@ -22,9 +22,8 @@ public class Ordine {
     /**
      * Crea un ordine associato all'utente indicato, registra la data corrente
      * e inizializza la lista delle righe come vuota.
-     *
      * @param utente utente proprietario dell'ordine
-     * @throws IllegalArgumentException se {@code utente} è {@code null}
+     * @throws IllegalArgumentException se utente è null
      */
     public Ordine(Utente utente) {
         
@@ -40,13 +39,12 @@ public class Ordine {
 
 
      /**
-     * Assegna all'ordine l'identificativo generato dal database.
-     * L'ID può essere assegnato una sola volta e deve essere positivo.
-     *
-     * @param id identificativo positivo restituito dal database
-     * @throws IllegalArgumentException se {@code id} è minore o uguale a zero
-     * @throws IllegalStateException se a questo ordine è già stato assegnato un ID
-     */
+      * Assegna all'ordine l'identificativo generato dal database.
+      * L'ID può essere assegnato una sola volta e deve essere positivo.
+      * @param id identificativo positivo restituito dal database
+      * @throws IllegalArgumentException se id è minore o uguale a zero
+      * @throws IllegalStateException se a questo ordine è già stato assegnato un ID
+      */
     public void setId(long id) {
         if(this.id != 0)
             throw new IllegalStateException("L'ID della classe ordine è stato già assegnato dal Database");
@@ -56,7 +54,6 @@ public class Ordine {
     }
     /**
      * Restituisce la data e l'ora in cui è stato creato l'ordine.
-     *
      * @return data e ora di creazione
      */
     public LocalDateTime getDataOrdine() {
@@ -66,7 +63,6 @@ public class Ordine {
     /**
      * Restituisce l'identificativo assegnato dal database, oppure zero se
      * l'ordine non è ancora stato salvato.
-     *
      * @return identificativo dell'ordine
      */
     public long getId() {
@@ -77,8 +73,7 @@ public class Ordine {
     }*/
     /**
      * Restituisce una copia non modificabile delle righe attualmente associate
-     * all'ordine. Per aggiungere righe usare {@link #aggiungiRiga(RigaOrdine)}.
-     *
+     * all'ordine. Per aggiungere righe usare aggiungiRiga.
      * @return copia non modificabile delle righe dell'ordine
      */
     public List<RigaOrdine> getRighe() {
@@ -90,7 +85,6 @@ public class Ordine {
     /**
      * Restituisce il totale corrente dell'ordine, espresso in euro.
      * Un ordine senza righe ha totale pari a zero.
-     *
      * @return totale corrente dell'ordine
      */
     public BigDecimal getTotale() {
@@ -98,7 +92,6 @@ public class Ordine {
     }
     /**
      * Restituisce l'utente proprietario dell'ordine.
-     *
      * @return utente associato all'ordine
      */
     public Utente getUtente() {
@@ -121,10 +114,9 @@ public class Ordine {
     /**
      * Aggiunge una riga all'ordine e ricalcola il totale.
      * La riga deve essere non nulla e fare riferimento a questo stesso ordine.
-     *
      * @param riga riga da aggiungere all'ordine
-     * @throws IllegalArgumentException se {@code riga} è {@code null} o appartiene
-     *                                  a un ordine diverso
+     * @throws IllegalArgumentException se riga è null o appartiene
+     * a un ordine diverso
      */
     public void aggiungiRiga(RigaOrdine riga) {
         if (riga == null) {
@@ -140,8 +132,7 @@ public class Ordine {
 
     /**
      * Calcola il totale sommando i subtotali delle righe presenti e aggiorna
-     * il campo {@code totale}. Se la lista è vuota, il totale diventa zero.
-     *
+     * il campo totale. Se la lista è vuota, il totale diventa zero.
      */
     public void calcolaTotale() {
         BigDecimal accumulatore = BigDecimal.ZERO;

@@ -7,10 +7,6 @@ import it.prog3.vendita.exception.ScortaInsufficienteException;
 
 /**
  * Rappresenta un contenuto multimediale venduto nel catalogo.
- *
- * <p>L'identificativo è assegnato dal database una sola volta. Il codice deve
- * essere univoco: la sua unicità tra prodotti diversi è verificata dal livello
- * di persistenza.</p>
  */
 public class Prodotto {
 
@@ -25,17 +21,16 @@ public class Prodotto {
 
     /**
      * Crea un prodotto non ancora identificato dal database.
-     *
      * @param nome nome obbligatorio del prodotto
      * @param codice codice obbligatorio del prodotto
      * @param descrizione descrizione obbligatoria del prodotto
      * @param quantitaScorta quantità iniziale in magazzino, non negativa
      * @param costo costo unitario, non nullo e maggiore di zero
      * @param percentualeSconto sconto percentuale tra 1 e 99, oppure
-     *        {@code null} se non è previsto uno sconto
+     * null se non è previsto uno sconto
      * @param categoria categoria obbligatoria del prodotto
      * @throws IllegalArgumentException se uno dei parametri non rispetta i
-     *         vincoli indicati
+     * vincoli indicati
      */
     public Prodotto(String nome, String codice, String descrizione, int quantitaScorta, BigDecimal costo, Integer percentualeSconto, CategoriaComponente categoria) {
         this.nome = validaTesto(nome, "Il nome");
@@ -50,9 +45,8 @@ public class Prodotto {
     /**
      * Assegna l'identificativo positivo generato dal database. L'operazione è
      * consentita una sola volta per prodotto.
-     *
      * @param id identificativo generato dal database
-     * @throws IllegalArgumentException se {@code id} non è positivo
+     * @throws IllegalArgumentException se id non è positivo
      * @throws IllegalStateException se l'identificativo è già stato assegnato
      */
     public void setId(long id) {
@@ -67,7 +61,6 @@ public class Prodotto {
 
     /**
      * Aggiorna il nome del prodotto.
-     *
      * @param nome nuovo nome, non nullo né vuoto
      * @throws IllegalArgumentException se il nome è nullo o vuoto
      */
@@ -77,7 +70,6 @@ public class Prodotto {
 
     /**
      * Aggiorna la descrizione del prodotto.
-     *
      * @param descrizione nuova descrizione, non nulla né vuota
      * @throws IllegalArgumentException se la descrizione è nulla o vuota
      */
@@ -87,7 +79,6 @@ public class Prodotto {
 
     /**
      * Aggiorna la quantità disponibile in magazzino.
-     *
      * @param quantitaScorta nuova quantità, non negativa
      * @throws IllegalArgumentException se la quantità è negativa
      */
@@ -100,7 +91,6 @@ public class Prodotto {
 
     /**
      * Aggiorna il costo unitario del prodotto.
-     *
      * @param costo nuovo costo, non nullo e maggiore di zero
      * @throws IllegalArgumentException se il costo è nullo, zero o negativo
      */
@@ -113,11 +103,10 @@ public class Prodotto {
 
     /**
      * Aggiorna lo sconto percentuale del prodotto.
-     *
-     * @param percentualeSconto valore da 1 a 99, oppure {@code null} per
-     *        rimuovere lo sconto
+     * @param percentualeSconto valore da 1 a 99, oppure null per
+     * rimuovere lo sconto
      * @throws IllegalArgumentException se il valore non nullo non è compreso
-     *         tra 1 e 99
+     * tra 1 e 99
      */
     public void setPercentualeSconto(Integer percentualeSconto) {
         if (percentualeSconto != null
@@ -129,9 +118,8 @@ public class Prodotto {
 
     /**
      * Aggiorna la categoria del prodotto.
-     *
      * @param categoria nuova categoria, non nulla
-     * @throws IllegalArgumentException se la categoria è {@code null}
+     * @throws IllegalArgumentException se la categoria è null
      */
     public void setCategoria(CategoriaComponente categoria) {
         if (categoria == null) {
@@ -142,8 +130,7 @@ public class Prodotto {
 
     /**
      * Restituisce l'identificativo assegnato dal database.
-     *
-     * @return ID del prodotto, oppure {@code 0} prima del salvataggio
+     * @return ID del prodotto, oppure 0 prima del salvataggio
      */
     public long getId() {
         return id;
@@ -151,7 +138,6 @@ public class Prodotto {
 
     /**
      * Restituisce il codice del prodotto.
-     *
      * @return codice del prodotto
      */
     public String getCodice() {
@@ -160,7 +146,6 @@ public class Prodotto {
 
     /**
      * Restituisce la categoria del prodotto.
-     *
      * @return categoria associata al prodotto
      */
     public CategoriaComponente getCategoria() {
@@ -169,7 +154,6 @@ public class Prodotto {
 
     /**
      * Restituisce il costo unitario non scontato.
-     *
      * @return costo del prodotto
      */
     public BigDecimal getCosto() {
@@ -178,7 +162,6 @@ public class Prodotto {
 
     /**
      * Restituisce la descrizione del prodotto.
-     *
      * @return descrizione del prodotto
      */
     public String getDescrizione() {
@@ -187,7 +170,6 @@ public class Prodotto {
 
     /**
      * Restituisce il nome del prodotto.
-     *
      * @return nome del prodotto
      */
     public String getNome() {
@@ -196,8 +178,7 @@ public class Prodotto {
 
     /**
      * Restituisce la percentuale di sconto applicata, se presente.
-     *
-     * @return percentuale tra 1 e 99, oppure {@code null} se non c'è uno sconto
+     * @return percentuale tra 1 e 99, oppure null se non c'è uno sconto
      */
     public Integer getPercentualeSconto() {
         return percentualeSconto;
@@ -205,8 +186,7 @@ public class Prodotto {
 
     /**
      * Calcola il prezzo unitario dopo l'eventuale sconto. Il risultato viene
-     * arrotondato a due cifre decimali usando {@link RoundingMode#HALF_UP}.
-     *
+     * arrotondato a due cifre decimali usando RoundingMode.
      * @return prezzo scontato, o costo originale se non è previsto uno sconto
      */
     public BigDecimal getPrezzoScontato() {
@@ -220,7 +200,6 @@ public class Prodotto {
 
     /**
      * Restituisce la quantità disponibile in magazzino.
-     *
      * @return quantità disponibile, non negativa
      */
     public int getQuantitaScorta() {
@@ -229,10 +208,9 @@ public class Prodotto {
 
     /**
      * Verifica se il magazzino contiene la quantità richiesta.
-     *
      * @param quantita quantità richiesta
-     * @return {@code true} se la quantità richiesta è positiva e disponibile;
-     *         {@code false} altrimenti
+     * @return true se la quantità richiesta è positiva e disponibile;
+     * false altrimenti
      */
     public boolean isDisponibile(int quantita) {
         return quantita > 0 && quantitaScorta >= quantita;
@@ -240,11 +218,10 @@ public class Prodotto {
 
     /**
      * Riduce la scorta della quantità prelevata.
-     *
      * @param quantita quantità da prelevare, maggiore di zero
      * @throws IllegalArgumentException se la quantità non è positiva
      * @throws ScortaInsufficienteException se la scorta non copre la quantità
-     *         richiesta
+     * richiesta
      */
     public void riduciScorta(int quantita) throws ScortaInsufficienteException {
         if (quantita <= 0) {
@@ -259,7 +236,6 @@ public class Prodotto {
     /**
      * Verifica che una stringa obbligatoria contenga testo e ne rimuove gli
      * spazi iniziali e finali.
-     *
      * @param valore testo da controllare
      * @param nomeCampo nome del campo usato nel messaggio d'errore
      * @return valore ripulito dagli spazi esterni

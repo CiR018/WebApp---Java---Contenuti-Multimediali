@@ -7,10 +7,6 @@ import java.util.Objects;
 /**
  * Categoria che può contenere altre categorie, siano esse foglie o altre
  * categorie composte.
- *
- * <p>La categoria composta possiede un proprio identificativo e un proprio
- * nome. La lista dei figli è mantenuta privata e può essere modificata solo
- * attraverso i metodi pubblici dedicati.</p>
  */
 public class CategoriaComposita implements CategoriaComponente {
 
@@ -21,10 +17,9 @@ public class CategoriaComposita implements CategoriaComponente {
     /**
      * Crea una categoria composta senza figli e non ancora identificata dal
      * database.
-     *
-     * @param nome nome della categoria; non può essere {@code null} né vuoto
-     *             dopo aver rimosso gli spazi iniziali e finali
-     * @throws IllegalArgumentException se il nome è {@code null} o vuoto
+     * @param nome nome della categoria; non può essere null né vuoto
+     * dopo aver rimosso gli spazi iniziali e finali
+     * @throws IllegalArgumentException se il nome è null o vuoto
      */
     public CategoriaComposita(String nome) {
         
@@ -37,9 +32,8 @@ public class CategoriaComposita implements CategoriaComponente {
 
     /**
      * Restituisce l'identificativo assegnato a questa categoria.
-     *
-     * @return identificativo della categoria, oppure {@code 0} se non è ancora
-     *         stato assegnato dal database
+     * @return identificativo della categoria, oppure 0 se non è ancora
+     * stato assegnato dal database
      */
     @Override
     public long getID() {
@@ -49,7 +43,6 @@ public class CategoriaComposita implements CategoriaComponente {
 
     /**
      * Restituisce il nome di questa categoria.
-     *
      * @return nome della categoria
      */
     @Override
@@ -59,12 +52,6 @@ public class CategoriaComposita implements CategoriaComponente {
 
     /**
      * Restituisce i figli diretti di questa categoria.
-     *
-     * <p>La lista restituita è una copia immutabile: per modificare la
-     * gerarchia si usano {@link #aggiungi(CategoriaComponente)} e
-     * {@link #rimuovi(CategoriaComponente)}, che mantengono i controlli
-     * anti-ciclo.</p>
-     *
      * @return lista immutabile dei figli diretti, vuota se non ce ne sono
      */
     public List<CategoriaComponente> getFigli() {
@@ -73,14 +60,10 @@ public class CategoriaComposita implements CategoriaComponente {
 
     /**
      * Aggiunge una categoria figlia.
-     *
-     * <p>Il controllo impedisce di aggiungere {@code this} o un suo antenato,
-     * evitando cicli nella gerarchia delle categorie.</p>
-     *
      * @param categoria categoria da aggiungere
-     * @throws NullPointerException se {@code categoria} è {@code null}
+     * @throws NullPointerException se categoria è null
      * @throws IllegalArgumentException se la categoria è questa stessa
-     *         istanza, è già presente oppure creerebbe un ciclo
+     * istanza, è già presente oppure creerebbe un ciclo
      */
     public void aggiungi(CategoriaComponente categoria) {
         Objects.requireNonNull(categoria, "La categoria figlia non può essere null.");
@@ -97,9 +80,8 @@ public class CategoriaComposita implements CategoriaComponente {
 
     /**
      * Rimuove una categoria figlia.
-     *
      * @param categoria categoria da rimuovere
-     * @throws NullPointerException se {@code categoria} è {@code null}
+     * @throws NullPointerException se categoria è null
      */
     public void rimuovi(CategoriaComponente categoria) {
         Objects.requireNonNull(categoria, "La categoria da rimuovere non può essere null.");
@@ -109,10 +91,9 @@ public class CategoriaComposita implements CategoriaComponente {
     /**
      * Restituisce gli identificativi del sottoalbero di questa categoria,
      * includendo prima il suo ID e poi quelli di tutti i discendenti.
-     *
      * @return lista immutabile degli identificativi del sottoalbero
      * @throws IllegalStateException se questa categoria o un suo discendente
-     *         non ha ancora ricevuto un ID positivo dal database
+     * non ha ancora ricevuto un ID positivo dal database
      */
     @Override
     public List<Long> getIdSottoalbero() {
@@ -130,9 +111,8 @@ public class CategoriaComposita implements CategoriaComponente {
 
     /**
      * Assegna l'ID generato dal database.
-     *
      * @param id identificativo positivo generato dal database
-     * @throws IllegalArgumentException se {@code id} non è positivo
+     * @throws IllegalArgumentException se id non è positivo
      * @throws IllegalStateException se questa categoria ha già ricevuto un ID
      */
     @Override
@@ -149,10 +129,9 @@ public class CategoriaComposita implements CategoriaComponente {
     /**
      * Verifica ricorsivamente se il sottoalbero di una categoria contiene una
      * specifica istanza.
-     *
      * @param radice categoria da cui iniziare la ricerca
      * @param cercata istanza da cercare
-     * @return {@code true} se l'istanza è presente nel sottoalbero
+     * @return true se l'istanza è presente nel sottoalbero
      */
     private boolean contiene(CategoriaComponente radice, CategoriaComponente cercata) {
         if (radice == cercata) {

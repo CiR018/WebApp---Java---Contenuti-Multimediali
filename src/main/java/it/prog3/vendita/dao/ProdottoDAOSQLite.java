@@ -15,27 +15,25 @@ import it.prog3.vendita.model.Prodotto;
 
 /**
  * Implementazione SQLite delle operazioni di persistenza dei prodotti.
- *
- * <p>Usa {@link ConnessioneDB} per ottenere una connessione per ogni
- * operazione e {@link CategoriaDAO} per ricostruire la categoria associata
- * ai prodotti letti dal database. Il costo è memorizzato in centesimi nel
- * database e rappresentato in euro nel modello.</p>
  */
 public class ProdottoDAOSQLite implements ProdottoDAO {
 
-    /** Fornisce una nuova connessione SQLite per ciascuna operazione. */
+    /**
+     * Fornisce una nuova connessione SQLite per ciascuna operazione.
+     */
     private final ConnessioneDB connessioneDB;
 
-    /** Recupera gli oggetti categoria associati ai prodotti. */
+    /**
+     * Recupera gli oggetti categoria associati ai prodotti.
+     */
     private final CategoriaDAO categoriaDAO;
        
 
     /**
      * Crea il DAO SQLite dei prodotti.
-     *
      * @param connessioneDB configurazione usata per aprire le connessioni
      * @param categoriaDAO DAO usato per recuperare le categorie dei prodotti
-     * @throws IllegalArgumentException se una dipendenza è {@code null}
+     * @throws IllegalArgumentException se una dipendenza è null
      */
     public ProdottoDAOSQLite(ConnessioneDB connessioneDB, CategoriaDAO categoriaDAO) {
 
@@ -53,12 +51,11 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
 
     /**
      * Cerca un prodotto tramite l'ID assegnato dal database.
-     *
      * @param id identificativo positivo del prodotto
-     * @return prodotto trovato, oppure {@code null} se non esiste
+     * @return prodotto trovato, oppure null se non esiste
      * @throws IllegalArgumentException se l'ID non è positivo
      * @throws SQLException se si verifica un errore SQL o manca la categoria
-     *         riferita dal prodotto
+     * riferita dal prodotto
      */
     @Override
     public Prodotto trovaPerID(long id) throws SQLException {
@@ -86,10 +83,9 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
     }
     /**
      * Recupera tutti i prodotti presenti nel catalogo.
-     *
      * @return prodotti trovati, oppure lista vuota se il catalogo è vuoto
      * @throws SQLException se si verifica un errore SQL o manca la categoria
-     *         riferita da un prodotto
+     * riferita da un prodotto
      */
     @Override
     public List<Prodotto> trovaTutti() throws SQLException {
@@ -112,13 +108,12 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
     }
     /**
      * Cerca un prodotto tramite il suo codice univoco.
-     *
      * @param codiceProdotto codice da cercare; gli spazi esterni vengono rimossi
-     * @return prodotto trovato, oppure {@code null} se non esiste
-     * @throws IllegalArgumentException se il codice è {@code null}, vuoto o
-     *         composto soltanto da spazi
+     * @return prodotto trovato, oppure null se non esiste
+     * @throws IllegalArgumentException se il codice è null, vuoto o
+     * composto soltanto da spazi
      * @throws SQLException se si verifica un errore SQL o manca la categoria
-     *         riferita dal prodotto
+     * riferita dal prodotto
      */
     @Override
     public Prodotto trovaPerCodice(String codiceProdotto) throws SQLException {
@@ -147,12 +142,11 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
     }
     /**
      * Inserisce un nuovo prodotto e assegna all'oggetto l'ID generato da SQLite.
-     *
      * @param prodotto prodotto nuovo da salvare
-     * @throws IllegalArgumentException se il prodotto è {@code null}, ha già
-     *         un ID o la sua categoria non ha ancora un ID
+     * @throws IllegalArgumentException se il prodotto è null, ha già
+     * un ID o la sua categoria non ha ancora un ID
      * @throws ArithmeticException se il costo non è rappresentabile esattamente
-     *         in centesimi
+     * in centesimi
      * @throws SQLException se l'inserimento o il recupero dell'ID fallisce
      */
     @Override
@@ -211,14 +205,13 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
     }
     /**
      * Aggiorna nel database i dati di un prodotto già identificato.
-     *
      * @param prodotto prodotto con i dati aggiornati e un ID assegnato
-     * @throws IllegalArgumentException se il prodotto è {@code null}, non ha
-     *         un ID positivo o la categoria non ha un ID positivo
+     * @throws IllegalArgumentException se il prodotto è null, non ha
+     * un ID positivo o la categoria non ha un ID positivo
      * @throws ArithmeticException se il costo non è rappresentabile esattamente
-     *         in centesimi
+     * in centesimi
      * @throws SQLException se si verifica un errore SQL o l'ID non corrisponde
-     *         a un prodotto presente
+     * a un prodotto presente
      */
     @Override
     public void aggiorna(Prodotto prodotto) throws SQLException {
@@ -270,11 +263,10 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
 
     /**
      * Elimina dal database il prodotto con l'ID indicato.
-     *
      * @param id identificativo positivo del prodotto da eliminare
      * @throws IllegalArgumentException se l'ID non è positivo
      * @throws SQLException se si verifica un errore SQL, il prodotto non esiste
-     *         o un vincolo del database impedisce l'eliminazione
+     * o un vincolo del database impedisce l'eliminazione
      */
     @Override
     public void elimina(long id) throws SQLException {
@@ -300,12 +292,11 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
     }
     /**
      * Recupera i prodotti assegnati direttamente alla categoria indicata.
-     *
      * @param idCategoria identificativo positivo della categoria
      * @return prodotti della categoria, oppure lista vuota se non ce ne sono
      * @throws IllegalArgumentException se l'ID categoria non è positivo
      * @throws SQLException se si verifica un errore SQL o manca la categoria
-     *         riferita da un prodotto
+     * riferita da un prodotto
      */
     @Override
     public List<Prodotto> trovaPerCategoria(long idCategoria) throws SQLException {
@@ -335,20 +326,14 @@ public class ProdottoDAOSQLite implements ProdottoDAO {
 
 
 /**
- * Converte la riga corrente del {@link ResultSet} in un {@link Prodotto}.
- *
- * <p>Il costo viene convertito da centesimi (database) a euro (modello),
- * lo sconto {@code NULL} diventa {@code null} e la categoria viene recuperata
- * tramite {@link CategoriaDAO}. L'ID letto dal database è assegnato al prodotto
- * dopo la sua creazione.</p>
- *
+ * Converte la riga corrente del ResultSet in un Prodotto.
  * @param risultato risultato già posizionato su una riga valida
- *        (dopo una chiamata riuscita a {@code next()}), con le colonne
- *        {@code id, codice, nome, descrizione, quantitaScorta, costo,
- *        percentualeSconto, id_categoria}
+ * (dopo una chiamata riuscita a next()), con le colonne
+ * id, codice, nome, descrizione, quantitaScorta, costo,
+ * percentualeSconto, id_categoria
  * @return prodotto ricostruito dalla riga corrente
  * @throws SQLException se la lettura fallisce o se la categoria riferita
- *         dal prodotto non esiste
+ * dal prodotto non esiste
  */
     private Prodotto mappaRiga(ResultSet risultato) throws SQLException {
     

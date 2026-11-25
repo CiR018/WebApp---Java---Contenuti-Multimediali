@@ -3,9 +3,6 @@ package it.prog3.vendita.model;
 /**
  * Rappresenta un account del sistema, identificato da nome, cognome e username,
  * con un ruolo e le credenziali necessarie per l'autenticazione.
- * <p>
- * {@code passwordHash} contiene l'hash della password, non la password in
- * chiaro. L'identificativo viene assegnato dal database dopo il salvataggio.
  */
 public class Utente {
 
@@ -20,19 +17,12 @@ public class Utente {
     /**
      * Crea un account con i dati anagrafici, le credenziali e il ruolo indicati.
      * L'identificativo non è richiesto perché viene assegnato dal database.
-     * <p>
-     * Per la registrazione pubblica, il livello applicativo deve fornire
-     * {@link Ruolo#CLIENTE}; il ruolo non deve essere scelto tramite un valore
-     * inviato dal browser. Il parametro consente anche di ricostruire account
-     * amministrativi già presenti nel database.
-     *
      * @param nome nome dell'utente
      * @param cognome cognome dell'utente
      * @param username nome utente univoco usato per l'accesso
-     * @param passwordHash hash della password prodotto da {@code PasswordHasher};
+     * @param passwordHash hash della password prodotto da PasswordHasher;
      * @param ruolo ruolo assegnato all'account
      * @throws IllegalArgumentException se uno dei parametri obbligatori è diverso da quello aspettato
-     * 
      */
 
     public Utente(String nome, String cognome, String username, String passwordHash, Ruolo ruolo) {
@@ -68,7 +58,6 @@ public class Utente {
      * Restituisce l'hash della password memorizzato per l'account.
      * Il valore serve al flusso di autenticazione e non deve essere esposto
      * nelle pagine o nelle risposte inviate al browser.
-     *
      * @return hash della password
      */
     public String getPasswordHash() {
@@ -79,7 +68,6 @@ public class Utente {
     /**
      * Restituisce l'identificativo assegnato dal database, oppure zero se
      * l'account non è ancora stato salvato.
-     *
      * @return identificativo dell'account
      */
     public long getId() {
@@ -87,7 +75,6 @@ public class Utente {
     }
     /**
      * Restituisce il nome dell'utente.
-     *
      * @return nome dell'utente
      */
     public String getNome() {
@@ -95,7 +82,6 @@ public class Utente {
     }
     /**
      * Restituisce il cognome dell'utente.
-     *
      * @return cognome dell'utente
      */
     public String getCognome() {
@@ -104,7 +90,6 @@ public class Utente {
 
     /**
      * Restituisce il ruolo assegnato all'account.
-     *
      * @return ruolo dell'account
      */
     public Ruolo getRuolo() {
@@ -113,7 +98,6 @@ public class Utente {
     /**
      * Restituisce lo username usato per identificare l'account durante
      * l'accesso.
-     *
      * @return username dell'account
      */
     public String getUsername() {
@@ -122,7 +106,6 @@ public class Utente {
 
     /**
      * Aggiorna il cognome dell'utente.
-     *
      * @param cognome nuovo cognome dell'utente
      */
     public void setCognome(String cognome) {
@@ -131,9 +114,8 @@ public class Utente {
     /**
      * Assegna all'account l'identificativo positivo generato dal database.
      * L'identificativo può essere assegnato una sola volta.
-     *
      * @param id identificativo generato dal database
-     * @throws IllegalArgumentException se {@code id} è minore o uguale a zero
+     * @throws IllegalArgumentException se id è minore o uguale a zero
      * @throws IllegalStateException se all'account è già stato assegnato un ID
      */
     public void setId(long id) {
@@ -145,7 +127,6 @@ public class Utente {
     }
     /**
      * Aggiorna il nome dell'utente.
-     *
      * @param nome nuovo nome dell'utente
      */
     public void setNome(String nome) {
@@ -153,9 +134,8 @@ public class Utente {
     }
     /**
      * Aggiorna l'hash della password dell'account.
-     * Il parametro deve essere un hash prodotto da {@code PasswordHasher},
+     * Il parametro deve essere un hash prodotto da PasswordHasher,
      * non la password in chiaro.
-     *
      * @param passwordHash nuovo hash della password
      */
     public void setPasswordHash(String passwordHash) {
@@ -165,7 +145,6 @@ public class Utente {
      * Aggiorna il ruolo dell'account.
      * La logica applicativa deve impedire che un utente imposti autonomamente
      * il ruolo tramite dati ricevuti dal browser.
-     *
      * @param ruolo nuovo ruolo dell'account
      */
     public void setRuolo(Ruolo ruolo) {
@@ -174,7 +153,6 @@ public class Utente {
     /**
      * Aggiorna lo username dell'account.
      * L'unicità dello username è garantita dal vincolo del database.
-     *
      * @param username nuovo username dell'account
      */
     public void setUsername(String username) {
