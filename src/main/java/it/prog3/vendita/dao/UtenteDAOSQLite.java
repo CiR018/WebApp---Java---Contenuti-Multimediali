@@ -1,21 +1,30 @@
 package it.prog3.vendita.dao;
 
 import java.sql.Statement;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import it.prog3.vendita.model.CategoriaComponente;
-import it.prog3.vendita.model.Prodotto;
 import it.prog3.vendita.model.Ruolo;
 import it.prog3.vendita.model.Utente;
 
+/**
+ * Implementazione di UtenteDAO che salva e legge gli account dal database SQLite.
+ * Ogni metodo apre una nuova connessione tramite ConnessioneDB e la chiude
+ * alla fine dell'operazione. Le query usano PreparedStatement per evitare
+ * problemi di SQL injection.
+ */
 public class UtenteDAOSQLite implements UtenteDAO {
 
-    final ConnessioneDB connessioneDB;
+    private final ConnessioneDB connessioneDB;
 
+    /**
+     * Crea il DAO usando la connessione al database passata come parametro.
+     *
+     * @param connessione oggetto che fornisce le connessioni al database
+     * @throws IllegalArgumentException se la connessione è null
+     */
     public UtenteDAOSQLite(ConnessioneDB connessione) {
         if (connessione == null)
             throw new IllegalArgumentException("ConnessioneDB non può essere null. \n ");
@@ -23,6 +32,14 @@ public class UtenteDAOSQLite implements UtenteDAO {
         this.connessioneDB = connessione;
     }
 
+    /**
+     * Cerca un account nel database tramite il suo ID.
+     *
+     * @param id identificativo dell'account, deve essere maggiore di zero
+     * @return l'account trovato, oppure null se non esiste
+     * @throws IllegalArgumentException se l'ID non è positivo
+     * @throws SQLException se si verifica un errore durante l'accesso al database
+     */
     @Override
     public Utente trovaPerID(long id) throws SQLException {
 
@@ -39,7 +56,7 @@ public class UtenteDAOSQLite implements UtenteDAO {
                 PreparedStatement statement = connessione.prepareStatement(query)) {
             statement.setLong(1, id);
             try (ResultSet risultato = statement.executeQuery()) {
-                // next() è false quando la query non ha trovato alcun prodotto.
+                // next() è false quando la query non ha trovato alcun utente.
                 if (!risultato.next())
                     return null;
 
@@ -49,11 +66,13 @@ public class UtenteDAOSQLite implements UtenteDAO {
     }
 
     /**
-     * Cerca un account tramite username.
-     * 
+     * Cerca un account nel database tramite lo username.
+     * Viene usato durante il login e per controllare se uno username è già occupato.
+     *
      * @param username username da cercare
-     * @return account trovato, oppure null se non esiste
-     * @throws SQLException se si verifica un errore durante l'accesso ai dati
+     * @return l'account trovato, oppure null se non esiste
+     * @throws IllegalArgumentException se lo username è null o vuoto
+     * @throws SQLException se si verifica un errore durante l'accesso al database
      */
     @Override
     public Utente trovaPerUsername(String username) throws SQLException {
@@ -71,7 +90,7 @@ public class UtenteDAOSQLite implements UtenteDAO {
                 PreparedStatement statement = connessione.prepareStatement(query)) {
             statement.setString(1, username);
             try (ResultSet risultato = statement.executeQuery()) {
-                // next() è false quando la query non ha trovato alcun prodotto.
+                // next() è false quando la query non ha trovato alcun utente.
                 if (!risultato.next())
                     return null;
 
@@ -81,10 +100,12 @@ public class UtenteDAOSQLite implements UtenteDAO {
     }
 
     /**
-     * Salva un nuovo account e assegna all'oggetto l'ID generato dal database.
-     * 
-     * @param utente account da salvare
-     * @throws SQLException se si verifica un errore durante l'accesso ai dati
+     * Inserisce un nuovo account nel database e assegna all'oggetto
+     * l'ID generato da SQLite.
+     *
+     * @param utente account da salvare, non deve avere già un ID
+     * @throws IllegalArgumentException se l'utente è null o ha già un ID
+     * @throws SQLException se l'inserimento fallisce, per esempio se lo username esiste già
      */
     @Override
     public void salva(Utente utente) throws SQLException {
@@ -127,10 +148,14 @@ public class UtenteDAOSQLite implements UtenteDAO {
     }
 
     /**
-     * Aggiorna i dati di un account già salvato.
-     * 
-     * @param utente account con i dati aggiornati
-     * @throws SQLException se si verifica un errore durante l'accesso ai dati
+     * Aggiorna nel database i dati di un account già esistente.
+     * Al momento non è usato da nessun caso d'uso: è stato predisposto
+     * per una possibile funzione futura di modifica del profilo, con cui
+     * l'utente potrà cambiare nome, cognome, username o password.
+     *
+     * @param utente account con i dati aggiornati, deve avere un ID valido
+     * @throws IllegalArgumentException se l'utente è null o non ha un ID valido
+     * @throws SQLException se l'aggiornamento fallisce o non modifica esattamente un account
      */
     @Override
     public void aggiorna(Utente utente) throws SQLException {
@@ -160,10 +185,18 @@ public class UtenteDAOSQLite implements UtenteDAO {
 
             int righeAggiornate = statement.executeUpdate();
             if (righeAggiornate != 1)
-                throw new SQLException("L'inserimento non ha aggiornato esattamente un utente. \n");
+                throw new SQLException("L'aggiornamento non ha modificato esattamente un utente. \n");
         }
     }
 
+    /**
+     * Converte la riga corrente del ResultSet in un oggetto Utente.
+     * Serve a non ripetere lo stesso codice in tutti i metodi di ricerca.
+     *
+     * @param risultato risultato della query, posizionato sulla riga da leggere
+     * @return l'utente costruito con i dati della riga
+     * @throws SQLException se una colonna non può essere letta
+     */
     private Utente mappaRiga(ResultSet risultato) throws SQLException {
 
         long idUtente = risultato.getLong("id");

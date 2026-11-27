@@ -35,10 +35,15 @@ public interface UtenteDAO {
     public void salva(Utente utente) throws SQLException;
 
     /**
-     * Aggiorna i dati di un account già salvato.
-     * 
-     * @param utente account con i dati aggiornati
-     * @throws SQLException se si verifica un errore durante l'accesso ai dati
+     * Aggiorna nel database i dati di un account già esistente.
+     * Al momento non è usato da nessun caso d'uso: è stato predisposto
+     * per una possibile funzione futura di modifica del profilo, con cui
+     * l'utente potrà cambiare nome, cognome, username o password.
+     *
+     * @param utente account con i dati aggiornati, deve avere un ID valido
+     * @throws IllegalArgumentException se l'utente è null o non ha un ID valido
+     * @throws SQLException             se l'aggiornamento fallisce o non modifica
+     *                                  esattamente un account
      */
     public void aggiorna(Utente utente) throws SQLException;
 }
